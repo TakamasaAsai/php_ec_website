@@ -3,15 +3,14 @@ require_once('Products.php');
 $products = new Products();
 //更新処理
 if (isset($_POST['submitUpdate'])) {
+//    var_dump($_POST);
     $products->UpdateProducts();
 }
-//$productId = $_POST['product_id'];
-//$row = "";
-//if (isset($productId)) {
-//    $products->FetchProductsById($productId);
-//    return $row;
-//}
-var_dump($_POST);
+$productId = $_POST['product_id'];
+$rows = "";
+if (isset($productId)) {
+    $rows = $products->FetchProductsById($productId);
+}
 
 ?>
 
@@ -179,11 +178,14 @@ var_dump($_POST);
                     <div>
 
                     </div>
-                        <label><span>Name : </span><h5><?php echo $row['product_name']; ?></h5></label>
-                        <label><span>Price : </span><h5><?php echo $row['price']; ?></h5></label>
-                        <label><span>Quantity : </span><h5><?php echo $row['quantity']; ?></h5></label>
+                    <?php foreach ((array)$rows as $row) : ?>
+                        <label><h5>Name : <?php echo $row['product_name']; ?></h5></label>
+                        <label><h5>Price : <?php echo $row['price']; ?></h5></label>
+                        <label><h5>Quantity : <?php echo $row['quantity']; ?></h5></label>
+
                     <div>
                         <form action="" method="post">
+                            <input type='hidden' name='product_id' value='<?php echo $row['product_id']; ?>'>
                             <label><span>Name</span><input type="text" name="product_name" required></label>
                             <label><span>Price</span><input type="text" name="price" required></label>
                             <label><span>Quantity</span><input type="text" name="quantity" required></label>
@@ -192,8 +194,8 @@ var_dump($_POST);
                                        value=' Edit Product '>
                             </div>
                         </form>
-
                     </div>
+                    <?php endforeach; ?>
                 </div>
                 <!--                <div class="col-12 col-lg-4">-->
                 <!--                    <div class="cart-summary">-->

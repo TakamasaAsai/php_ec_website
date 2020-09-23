@@ -4,7 +4,10 @@ $products = new Products();
 
 //全レコードを表示する処理
 $recordlist = $products->SelectProductsAll();
-
+//削除処理
+if (isset($_POST['delete'])) {
+    $products->DeleteProducts($_POST['id']);
+}
 
 ?>
 <!DOCTYPE html>
@@ -306,14 +309,20 @@ $recordlist = $products->SelectProductsAll();
                                            title="Add to Cart"><img src="img/core-img/cart.png" alt=""></a>
                                     </div>
                                     <div>
-                                        <a href="edit-product.php" class="btn amado-btn mb-15">Edit Product</a>
                                         <form method='post' action='edit-product.php'>
                                             <!--valueの中身を更新する商品のGoodsIDのみ表示したい。-->
                                             <input type='hidden' name='product_id' value='<?php echo $item['product_id']; ?>'>
                                             <!--更新ボタンで指定された商品レコードのGoodsIDをPOST更新用フォーム要素の表示の$_POST['update']に送る-->
-                                            <input type='submit' name='update' value='更新'>
+                                            <input class="btn amado-btn mb-15" type='submit' name='update' value='Edit Product'>
                                         </form>
-                                        <a href="#" class="btn amado-btn mb-15">Delete Product</a>
+                                    </div>
+                                    <div>
+                                        <form method='post' action=''>
+                                            <!--valueの中身を削除する商品のGoodsIDのみ表示したい。-->
+                                            <input type='hidden' name='id' id='Deleted' value='<?php echo $item['product_id']; ?>'>
+                                            <!--削除ボタンで指定された商品レコードのGoodsIDをPOSTで削除処理の$_POST['delete']へ送って、データベースから削除する-->
+                                            <input class="btn amado-btn mb-15" type='submit' name='delete' id='delete' value='Delete Product' onClick='return CheckDelete()'>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

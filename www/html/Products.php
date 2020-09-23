@@ -41,7 +41,14 @@ class Products extends DB
     {
         $sql = "UPDATE products SET product_name=?, price=?, quantity=? WHERE product_id=?";
         //array関数の引数の順番に注意する
-        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity']);
+        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity'], $_POST['product_id']);
+        parent::executeSQL($sql, $array);
+    }
+
+    public function DeleteProducts($productId)
+    {
+        $sql = "DELETE FROM products WHERE product_id=?";
+        $array = array($productId);
         parent::executeSQL($sql, $array);
     }
 
@@ -65,13 +72,6 @@ class Products extends DB
         return $rows[0];
     }
 
-
-    public function DeleteProducts($GoodsID)
-    {
-        $sql = "DELETE FROM products WHERE GoodsID=?";
-        $array = array($GoodsID);
-        parent::executeSQL($sql, $array);
-    }
 
     public function DefinePages()
     {
