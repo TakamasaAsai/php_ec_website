@@ -1,3 +1,8 @@
+<?php
+session_start();
+$products = isset($_SESSION['products'])? $_SESSION['products']:[];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -71,8 +76,7 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="shop.php">Shop</a></li>
-                    <li><a href="product-details.html">Product</a></li>
-                    <li class="active"><a href="cart.html">Cart</a></li>
+                    <li class="active"><a href="cart.php">Cart</a></li>
                     <li><a href="checkout.html">Checkout</a></li>
                     <li><a href="orderhistory.html">Order History</a></li>
                 </ul>
@@ -84,7 +88,7 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
+                <a href="cart.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
                 <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
@@ -117,69 +121,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                <?php foreach($products as $name => $product): ?>
                                     <tr>
                                         <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart1.jpg" alt="Product"></a>
+                                            <a href="#"><img src="<?php echo $product['image']; ?>" alt="Product"></a>
                                         </td>
                                         <td class="cart_product_desc">
-                                            <h5>White Modern Chair</h5>
+                                            <h5><?php echo $name; ?></h5>
                                         </td>
                                         <td class="price">
-                                            <span>$130</span>
+                                            <span>$<?php echo $product['price']; ?></span>
                                         </td>
                                         <td class="qty">
                                             <div class="qty-btn d-flex">
                                                 <p>Qty</p>
                                                 <div class="quantity">
                                                     <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
+                                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="<?php echo $product['count']; ?>">
                                                     <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart2.jpg" alt="Product"></a>
-                                        </td>
-                                        <td class="cart_product_desc">
-                                            <h5>Minimal Plant Pot</h5>
-                                        </td>
-                                        <td class="price">
-                                            <span>$10</span>
-                                        </td>
-                                        <td class="qty">
-                                            <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty2" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart3.jpg" alt="Product"></a>
-                                        </td>
-                                        <td class="cart_product_desc">
-                                            <h5>Minimal Plant Pot</h5>
-                                        </td>
-                                        <td class="price">
-                                            <span>$10</span>
-                                        </td>
-                                        <td class="qty">
-                                            <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty3" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -261,10 +225,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
                                             <a class="nav-link" href="shop.php">Shop</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="product-details.html">Product</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="cart.html">Cart</a>
+                                            <a class="nav-link" href="cart.php">Cart</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="checkout.html">Checkout</a>

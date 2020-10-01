@@ -8,7 +8,44 @@ $recordlist = $products->SelectProductsAll();
 if (isset($_POST['delete'])) {
     $products->DeleteProducts($_POST['id']);
 }
+$image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
+$name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
+$price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 'utf-8') : '';
+$count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
 
+session_start();
+//もし、sessionにproductsがあったら
+if (isset($_SESSION['products'])) {
+    //$_SESSION['products']を$productsという変数にいれる
+    $products = $_SESSION['products'];
+    //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
+    foreach ($products as $key => $product) {
+        //もし、キーとPOSTで受け取った商品名が一致したら、
+        if ($key == $name) {
+            //既に商品がカートに入っているので、個数を足し算する
+            $count = (int)$count + (int)$product['count'];
+        }
+    }
+}
+//配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
+if ($name != '' && $count != '' && $price != '' && $image != '') {
+    $_SESSION['products'][$name] = [
+        'count' => $count,
+        'price' => $price,
+        'image' => $image
+    ];
+}
+$products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
+//if (isset($products)) {
+//    foreach ($products as $key => $product) {
+//        echo $key;      //商品名
+//        echo "<br>";
+//        echo $product['count'];  //商品の個数
+//        echo "<br>";
+//        echo $product['price']; //商品の金額
+//        echo "<br>";
+//    }
+//}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,8 +120,7 @@ if (isset($_POST['delete'])) {
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li class="active"><a href="shop.php">Shop</a></li>
-                <li><a href="product-details.html">Product</a></li>
-                <li><a href="cart.html">Cart</a></li>
+                <li><a href="cart.php">Cart</a></li>
                 <li><a href="checkout.html">Checkout</a></li>
                 <li><a href="orderhistory.html">Order History</a></li>
             </ul>
@@ -96,7 +132,7 @@ if (isset($_POST['delete'])) {
         </div>
         <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
-            <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
+            <a href="cart.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
             <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
             <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
         </div>
@@ -249,34 +285,6 @@ if (isset($_POST['delete'])) {
                     <!-- Single Product Area -->
                     <div class="col-12 col-sm-6 col-md-12 col-xl-6">
                         <div class="single-product-wrapper">
-                            <!--                                <tr>-->
-                            <!--tdで囲みたいのは配列の中の各要素、ここでは1商品レコード内の各要素を取り出して表示している-->
-                            <!--                                    <td>--><?php //echo $item['id'];?><!--</td>-->
-                            <!--                                    <td>-->
-                            <?php //echo $item['product_name'];?><!--</td>-->
-                            <!--                                    <td>--><?php //echo $item['price'];?><!--</td>-->
-                            <!--                                    <td>--><?php //echo $item['quantity'];?><!--</td>-->
-                            <!--全体像：更新ボタンを表示させて、更新ボタンが押された商品レコードのGoodsIDで更新用フォームを表示させる。その商品名と単価をユーザーが書き換え、その内容でデータベースで更新する-->
-                            <!--                                    <td>-->
-                            <!--                                        <form method='post' action=''>-->
-                            <!--valueの中身を更新する商品のGoodsIDのみ表示したい。-->
-                            <!--                                            <input type='hidden' name='id' value='-->
-                            <?php //echo $item['id']; ?><!--'>-->
-                            <!--更新ボタンで指定された商品レコードのGoodsIDをPOST更新用フォーム要素の表示の$_POST['update']に送る-->
-                            <!--                                            <input type='submit' name='update' value='更新'>-->
-                            <!--                                        </form>-->
-                            <!--                                    </td>-->
-                            <!--                                    <td>-->
-                            <!--                                        <form method='post' action=''>-->
-                            <!--valueの中身を削除する商品のGoodsIDのみ表示したい。-->
-                            <!--                                            <input type='hidden' name='id' id='Deleted' value='-->
-                            <?php //echo $item['id']; ?><!--'>-->
-                            <!--削除ボタンで指定された商品レコードのGoodsIDをPOSTで削除処理の$_POST['delete']へ送って、データベースから削除する-->
-                            <!--                                            <input type='submit' name='delete' id='delete' value='削除' onClick='return CheckDelete()'>-->
-                            <!--                                        </form>-->
-                            <!--                                    </td>-->
-                            <!--                                </tr>-->
-
                             <!-- Product Image -->
                             <div class="product-img">
                                 <img src="<?php echo $item['image']; ?>" alt="">
@@ -290,38 +298,47 @@ if (isset($_POST['delete'])) {
                                 <div class="product-meta-data">
                                     <div class="line"></div>
                                     <p class="product-price">$<?php echo $item['price']; ?></p>
-                                    <a href="product-details.html">
-                                        <h5><?php echo $item['product_name']; ?></h5>
-                                        <h6>Stock : <?php echo $item['quantity']; ?></h6>
-                                    </a>
+                                    <!--                                    <a>-->
+                                    <h5><?php echo $item['product_name']; ?></h5>
+                                    <h6>Stock : <?php echo $item['quantity']; ?></h6>
+                                    <!--                                    </a>-->
                                 </div>
                                 <!-- Ratings & Cart -->
                                 <div class="ratings-cart text-right">
-                                    <div class="ratings">
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="cart">
-                                        <a href="cart.html" data-toggle="tooltip" data-placement="left"
-                                           title="Add to Cart"><img src="img/core-img/cart.png" alt=""></a>
-                                    </div>
+                                    <!--                                    <div class="ratings">-->
+                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
+                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
+                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
+                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
+                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
+                                    <!--                                    </div>-->
+                                    <form action="shop.php" method="POST" class="cart">
+                                        <input type="hidden" name="image" value="<?php echo $item['image']; ?>">
+                                        <input type="hidden" name="name" value="<?php echo $item['product_name']; ?>">
+                                        <input type="hidden" name="price" value="<?php echo $item['price']; ?>">
+                                        <input type="hidden" value="1" name="count">
+                                        <button type="submit" data-toggle="tooltip" data-placement="left"
+                                                title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png"
+                                                                                            alt=""></button>
+                                    </form>
                                     <div>
                                         <form method='post' action='edit-product.php'>
                                             <!--valueの中身を更新する商品のGoodsIDのみ表示したい。-->
-                                            <input type='hidden' name='product_id' value='<?php echo $item['product_id']; ?>'>
+                                            <input type='hidden' name='product_id'
+                                                   value='<?php echo $item['product_id']; ?>'>
                                             <!--更新ボタンで指定された商品レコードのGoodsIDをPOST更新用フォーム要素の表示の$_POST['update']に送る-->
-                                            <input class="btn amado-btn mb-15" type='submit' name='update' value='Edit Product'>
+                                            <input class="btn amado-btn mb-15" type='submit' name='update'
+                                                   value='Edit Product'>
                                         </form>
                                     </div>
                                     <div>
                                         <form method='post' action=''>
                                             <!--valueの中身を削除する商品のGoodsIDのみ表示したい。-->
-                                            <input type='hidden' name='id' id='Deleted' value='<?php echo $item['product_id']; ?>'>
+                                            <input type='hidden' name='id' id='Deleted'
+                                                   value='<?php echo $item['product_id']; ?>'>
                                             <!--削除ボタンで指定された商品レコードのGoodsIDをPOSTで削除処理の$_POST['delete']へ送って、データベースから削除する-->
-                                            <input class="btn amado-btn mb-15" type='submit' name='delete' id='delete' value='Delete Product' onClick='return CheckDelete()'>
+                                            <input class="btn amado-btn mb-15" type='submit' name='delete' id='delete'
+                                                   value='Delete Product' onClick='return CheckDelete()'>
                                         </form>
                                     </div>
                                 </div>
@@ -601,10 +618,7 @@ if (isset($_POST['delete'])) {
                                             <a class="nav-link" href="shop.php">Shop</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="product-details.html">Product</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="cart.html">Cart</a>
+                                            <a class="nav-link" href="cart.php">Cart</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="checkout.html">Checkout</a>

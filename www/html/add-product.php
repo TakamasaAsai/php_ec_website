@@ -82,8 +82,7 @@ if (isset($_POST['submitEntry'])) {
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="shop.php">Shop</a></li>
-                <li><a href="product-details.html">Product</a></li>
-                <li><a href="cart.html">Cart</a></li>
+                <li><a href="cart.php">Cart</a></li>
                 <li><a href="checkout.html">Checkout</a></li>
                 <li><a href="orderhistory.html">Order History</a></li>
             </ul>
@@ -95,7 +94,7 @@ if (isset($_POST['submitEntry'])) {
         </div>
         <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
-            <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
+            <a href="cart.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
             <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
             <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
         </div>
@@ -259,10 +258,7 @@ if (isset($_POST['submitEntry'])) {
                                         <a class="nav-link" href="shop.php">Shop</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="product-details.html">Product</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="cart.html">Cart</a>
+                                        <a class="nav-link" href="cart.php">Cart</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="checkout.html">Checkout</a>
