@@ -1,5 +1,10 @@
 <?php
+$delete_name = isset($_POST['delete_name'])? htmlspecialchars($_POST['delete_name'], ENT_QUOTES, 'utf-8') : '';
+
 session_start();
+//unset()で削除ボタンを押した変数を破棄する
+if($delete_name != '') unset($_SESSION['products'][$delete_name]);
+
 $products = isset($_SESSION['products'])? $_SESSION['products']:[];
 
 ?>
@@ -22,7 +27,11 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
-
+    <script type="text/javascript">
+        function CheckDelete() {
+            return confirm("削除してもよろしいですか？");
+        }
+    </script>
 </head>
 
 <body>
@@ -118,6 +127,7 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
+                                        <th>delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -142,6 +152,12 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                                                 </div>
                                             </div>
                                         </td>
+                                        <td>
+                                               <form action="cart.php" method="post">
+                                                   <input type="hidden" name="delete_name" value="<?php echo $name; ?>" onClick='return CheckDelete()'>
+                                                   <button type="submit" class="btn btn-red">削除</button>
+                                               </form>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
@@ -154,7 +170,7 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                             <ul class="summary-table">
                                 <li><span>subtotal:</span> <span>$140.00</span></li>
                                 <li><span>delivery:</span> <span>Free</span></li>
-                                <li><span>total:</span> <span>$140.00</span></li>
+                                <li><span>total:</span> <span>$400</span></li>
                             </ul>
                             <div class="cart-btn mt-100">
                                 <a href="checkout.html" class="btn amado-btn w-100">Checkout</a>

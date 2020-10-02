@@ -317,9 +317,7 @@ $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
                                         <input type="hidden" name="name" value="<?php echo $item['product_name']; ?>">
                                         <input type="hidden" name="price" value="<?php echo $item['price']; ?>">
                                         <input type="hidden" value="1" name="count">
-                                        <button type="submit" data-toggle="tooltip" data-placement="left"
-                                                title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png"
-                                                                                            alt=""></button>
+                                        <?php if($item['quantity']>0) {echo '<button type="submit" data-toggle="tooltip" data-placement="left" title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png" alt=""></button>';} ?>
                                     </form>
                                     <div>
                                         <form method='post' action='edit-product.php'>
