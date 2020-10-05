@@ -1,12 +1,46 @@
 <?php
+//カート内商品をSESSIONから削除する処理
 $delete_name = isset($_POST['delete_name'])? htmlspecialchars($_POST['delete_name'], ENT_QUOTES, 'utf-8') : '';
-
 session_start();
 //unset()で削除ボタンを押した変数を破棄する
 if($delete_name != '') unset($_SESSION['products'][$delete_name]);
 
+//POSTで送られてきたカート内商品のデータを変数へ代入
+$image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
+$name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
+$price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 'utf-8') : '';
+$count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
+$subtotal = "";
+//もし、sessionにproductsがあったら
+if (isset($_SESSION['products'])) {
+    //$_SESSION['products']を$productsという変数にいれる
+    $products = $_SESSION['products'];
+    //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
+    foreach ($products as $key => $product) {
+        //もし、キーとPOSTで受け取った商品名が一致したら、
+        if ($key == $name) {
+            //既に商品がカートに入っているので、個数を足し算する
+            //SESSION内の商品の個数
+            $count = (int)$count + (int)$product['count'];
+        }
+    }
+}
+//配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
+if ($name != '' && $count != '' && $price != '' && $image != '') {
+    $_SESSION['products'][$name] = [
+        'count' => $count,
+        'price' => $price,
+        'image' => $image
+    ];
+}
 $products = isset($_SESSION['products'])? $_SESSION['products']:[];
 
+    foreach($products as $name => $product){
+            //各商品の小計を取得
+            $subtotal = (int)$product['price']*(int)$product['count'];
+            //各商品の小計を$totalに足す
+            $total += $subtotal;
+        }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -127,7 +161,7 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                                         <th>Name</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
-                                        <th>delete</th>
+                                        <th>Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -146,12 +180,15 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                                             <div class="qty-btn d-flex">
                                                 <p>Qty</p>
                                                 <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="<?php echo $product['count']; ?>">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty<?php echo $name; ?>'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                                    <input type="number" class="qty-text" id="qty<?php echo $name; ?>" step="1" min="1" max="300" name="quantity" value="<?php echo $product['count']; ?>">
+                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty<?php echo $name; ?>'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                                 </div>
                                             </div>
                                         </td>
+                                        <td label="小計：" class="text-right">$<?php echo $product['price']*$product['count']; ?>
+                                        </td>
+
                                         <td>
                                                <form action="cart.php" method="post">
                                                    <input type="hidden" name="delete_name" value="<?php echo $name; ?>" onClick='return CheckDelete()'>
@@ -168,12 +205,17 @@ $products = isset($_SESSION['products'])? $_SESSION['products']:[];
                         <div class="cart-summary">
                             <h5>Cart Total</h5>
                             <ul class="summary-table">
-                                <li><span>subtotal:</span> <span>$140.00</span></li>
-                                <li><span>delivery:</span> <span>Free</span></li>
-                                <li><span>total:</span> <span>$400</span></li>
+                                <li><span>total:</span> <span>$<?php echo $total?></span></li>
                             </ul>
                             <div class="cart-btn mt-100">
-                                <a href="checkout.html" class="btn amado-btn w-100">Checkout</a>
+                                <form action="checkout.php" method="POST" class="cart">
+                                    <input type="hidden" name="image" value="<?php echo $product['image']; ?>">
+                                    <input type="hidden" name="name" value="<?php echo $name; ?>">
+                                    <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
+                                    <input type="hidden" name="total" value="<?php echo $total; ?>">
+                                    <input type="hidden" value="1" name="count">
+                                    <button type="submit" class="btn amado-btn w-100">Checkout</button>
+                                </form>
                             </div>
                         </div>
                     </div>

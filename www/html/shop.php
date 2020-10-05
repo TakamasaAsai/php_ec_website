@@ -8,44 +8,7 @@ $recordlist = $products->SelectProductsAll();
 if (isset($_POST['delete'])) {
     $products->DeleteProducts($_POST['id']);
 }
-$image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
-$name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
-$price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 'utf-8') : '';
-$count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
 
-session_start();
-//もし、sessionにproductsがあったら
-if (isset($_SESSION['products'])) {
-    //$_SESSION['products']を$productsという変数にいれる
-    $products = $_SESSION['products'];
-    //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
-    foreach ($products as $key => $product) {
-        //もし、キーとPOSTで受け取った商品名が一致したら、
-        if ($key == $name) {
-            //既に商品がカートに入っているので、個数を足し算する
-            $count = (int)$count + (int)$product['count'];
-        }
-    }
-}
-//配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
-if ($name != '' && $count != '' && $price != '' && $image != '') {
-    $_SESSION['products'][$name] = [
-        'count' => $count,
-        'price' => $price,
-        'image' => $image
-    ];
-}
-$products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
-//if (isset($products)) {
-//    foreach ($products as $key => $product) {
-//        echo $key;      //商品名
-//        echo "<br>";
-//        echo $product['count'];  //商品の個数
-//        echo "<br>";
-//        echo $product['price']; //商品の金額
-//        echo "<br>";
-//    }
-//}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -146,98 +109,6 @@ $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
     </header>
     <!-- Header Area End -->
 
-    <!--        <div class="shop_sidebar_area">-->
-    <!---->
-    <!--             ##### Single Widget ##### -->
-    <!--            <div class="widget catagory mb-50">-->
-    <!--                 Widget Title -->
-    <!--                <h6 class="widget-title mb-30">Catagories</h6>-->
-    <!---->
-    <!--                  Catagories  -->
-    <!--                <div class="catagories-menu">-->
-    <!--                    <ul>-->
-    <!--                        <li class="active"><a href="#">Chairs</a></li>-->
-    <!--                        <li><a href="#">Beds</a></li>-->
-    <!--                        <li><a href="#">Accesories</a></li>-->
-    <!--                        <li><a href="#">Furniture</a></li>-->
-    <!--                        <li><a href="#">Home Deco</a></li>-->
-    <!--                        <li><a href="#">Dressings</a></li>-->
-    <!--                        <li><a href="#">Tables</a></li>-->
-    <!--                    </ul>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!---->
-    <!--             ##### Single Widget ##### -->
-    <!--            <div class="widget brands mb-50">-->
-    <!--                 Widget Title -->
-    <!--                <h6 class="widget-title mb-30">Brands</h6>-->
-    <!---->
-    <!--                <div class="widget-desc">-->
-    <!--                     Single Form Check -->
-    <!--                    <div class="form-check">-->
-    <!--                        <input class="form-check-input" type="checkbox" value="" id="amado">-->
-    <!--                        <label class="form-check-label" for="amado">Amado</label>-->
-    <!--                    </div>-->
-    <!--                     Single Form Check -->
-    <!--                    <div class="form-check">-->
-    <!--                        <input class="form-check-input" type="checkbox" value="" id="ikea">-->
-    <!--                        <label class="form-check-label" for="ikea">Ikea</label>-->
-    <!--                    </div>-->
-    <!--                     Single Form Check -->
-    <!--                    <div class="form-check">-->
-    <!--                        <input class="form-check-input" type="checkbox" value="" id="furniture">-->
-    <!--                        <label class="form-check-label" for="furniture">Furniture Inc</label>-->
-    <!--                    </div>-->
-    <!--                     Single Form Check -->
-    <!--                    <div class="form-check">-->
-    <!--                        <input class="form-check-input" type="checkbox" value="" id="factory">-->
-    <!--                        <label class="form-check-label" for="factory">The factory</label>-->
-    <!--                    </div>-->
-    <!--                     Single Form Check -->
-    <!--                    <div class="form-check">-->
-    <!--                        <input class="form-check-input" type="checkbox" value="" id="artdeco">-->
-    <!--                        <label class="form-check-label" for="artdeco">Artdeco</label>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!---->
-    <!--             ##### Single Widget ##### -->
-    <!--            <div class="widget color mb-50">-->
-    <!--                 Widget Title -->
-    <!--                <h6 class="widget-title mb-30">Color</h6>-->
-    <!---->
-    <!--                <div class="widget-desc">-->
-    <!--                    <ul class="d-flex">-->
-    <!--                        <li><a href="#" class="color1"></a></li>-->
-    <!--                        <li><a href="#" class="color2"></a></li>-->
-    <!--                        <li><a href="#" class="color3"></a></li>-->
-    <!--                        <li><a href="#" class="color4"></a></li>-->
-    <!--                        <li><a href="#" class="color5"></a></li>-->
-    <!--                        <li><a href="#" class="color6"></a></li>-->
-    <!--                        <li><a href="#" class="color7"></a></li>-->
-    <!--                        <li><a href="#" class="color8"></a></li>-->
-    <!--                    </ul>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!---->
-    <!--             ##### Single Widget ##### -->
-    <!--            <div class="widget price mb-50">-->
-    <!--                 Widget Title -->
-    <!--                <h6 class="widget-title mb-30">Price</h6>-->
-    <!---->
-    <!--                <div class="widget-desc">-->
-    <!--                    <div class="slider-range">-->
-    <!--                        <div data-min="10" data-max="1000" data-unit="$" class="slider-range-price ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all" data-value-min="10" data-value-max="1000" data-label-result="">-->
-    <!--                            <div class="ui-slider-range ui-widget-header ui-corner-all"></div>-->
-    <!--                            <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>-->
-    <!--                            <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>-->
-    <!--                        </div>-->
-    <!--                        <div class="range-price">$10 - $1000</div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-
     <div class="cart-table-area section-padding-100">
         <div class="container-fluid">
 
@@ -305,19 +176,12 @@ $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
                                 </div>
                                 <!-- Ratings & Cart -->
                                 <div class="ratings-cart text-right">
-                                    <!--                                    <div class="ratings">-->
-                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
-                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
-                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
-                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
-                                    <!--                                        <i class="fa fa-star" aria-hidden="true"></i>-->
-                                    <!--                                    </div>-->
-                                    <form action="shop.php" method="POST" class="cart">
+                                    <form action="cart.php" method="POST" class="cart">
                                         <input type="hidden" name="image" value="<?php echo $item['image']; ?>">
                                         <input type="hidden" name="name" value="<?php echo $item['product_name']; ?>">
                                         <input type="hidden" name="price" value="<?php echo $item['price']; ?>">
                                         <input type="hidden" value="1" name="count">
-                                        <?php if($item['quantity']>0) {echo '<button type="submit" data-toggle="tooltip" data-placement="left" title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png" alt=""></button>';} ?>
+                                        <?php if($item['quantity']>0) {echo '<button type="submit" data-toggle="tooltip" data-placement="left" title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png"></button>';} ?>
                                     </form>
                                     <div>
                                         <form method='post' action='edit-product.php'>
