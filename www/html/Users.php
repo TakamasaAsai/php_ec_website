@@ -16,4 +16,11 @@ class Users extends DB
             return $rows;
         }
     }
+    public function UpdateDeposit()
+    {
+        $sql = "UPDATE users SET deposit=? WHERE user_id=?";
+        //array関数の引数の順番に注意する
+        $array = array($_POST['remainingBalance'], $_POST['usersId']);
+        parent::executeSQL($sql, $array);
+    }
 }

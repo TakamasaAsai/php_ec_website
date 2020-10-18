@@ -52,6 +52,29 @@ class Products extends DB
         parent::executeSQL($sql, $array);
     }
 
+    public function  InsertSalesData()
+    {
+        $date = date('Y-m-d H:i:s');
+        $sql = "INSERT INTO sales_data (sales_date, total, user_name, users_id) VALUES(?,?,?,?)";
+        $array = array($date, $_POST['total'], $_POST['userName'], $_POST['usersId']);
+        parent::executeSQL($sql, $array);
+    }
+
+    public function InsertSalesProducts($salesId,$key,$product)
+    {
+        $sql = "INSERT INTO sales_products (sales_id, product_name, quantity, price) VALUES(?,?,?,?)";
+        $array = array($salesId[0], $key, $product['count'], $product['price']);
+        parent::executeSQL($sql, $array);
+    }
+
+    public function FetchLastInsertId()
+    {
+        $sql = "SELECT MAX(id) FROM sales_data";
+        $lastInsertId = parent::executeSQL($sql, null);
+        $rows = $lastInsertId->fetchAll(PDO::FETCH_NUM);
+        return $rows[0];
+    }
+
     public function GoodsNameForUpdate($GoodsID)
     {                               //③
         return $this->FieldValueForUpdate($GoodsID, "GoodsName");

@@ -1,9 +1,10 @@
 <?php
 //require_once ('db.php');
 //$db = new DB();
+session_start();
 require_once('Users.php');
 $users = new Users();
-//DBからid=1のユーザデータを取得し、名前、Depositを表示
+//DBからid=1のユーザデータを取得し、名前、Depositを表示す処理
 $usersId = 1;
 $rows = "";
 if (isset($usersId)) {
@@ -13,12 +14,39 @@ foreach($rows as $row){
     $userName = $row['user_name'];
     $deposit = $row['deposit'];
 }
+//カート内容を表示するためPOSTの値を受け取って変数に詰める
 $image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
 $name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
 $price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 'utf-8') : '';
 $count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
 $total = isset($_POST['total']) ? htmlspecialchars($_POST['total'], ENT_QUOTES, 'utf-8') : '';
+$remainingBalance = $deposit-$total;
 
+//もし、sessionにproductsがあったら
+if (isset($_SESSION['products'])) {
+    //$_SESSION['products']を$productsという変数にいれる
+    $products = $_SESSION['products'];
+    //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
+    foreach ($products as $key => $product) {
+        //もし、キーとPOSTで受け取った商品名が一致したら、
+        if ($key == $name) {
+            //既に商品がカートに入っているので、個数を足し算する
+            //SESSION内の商品の個数
+            $count = (int)$count + (int)$product['count'];
+        }
+    }
+}
+//配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
+//if ($name != '' && $count != '' && $price != '' && $image != '') {
+//    $_SESSION['products'][$name] = [
+//        'count' => $count,
+//        'price' => $price,
+//        'image' => $image
+//    ];
+//}
+
+var_dump($products);
+var_dump($userName);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,61 +156,42 @@ $total = isset($_POST['total']) ? htmlspecialchars($_POST['total'], ENT_QUOTES, 
                             <div class="cart-title">
                                 <h2>Checkout Confirmation</h2>
                             </div>
+                        </div>
+                    </div>
 
-<!--                            <form action="#" method="post">-->
-<!--                                <div class="row">-->
-<!--                                    <div class="col-md-6 mb-3">-->
-<!--                                        <input type="text" class="form-control" id="first_name" value="" placeholder="First Name" required>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-md-6 mb-3">-->
-<!--                                        <input type="text" class="form-control" id="last_name" value="" placeholder="Last Name" required>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <input type="text" class="form-control" id="company" placeholder="Company Name" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <input type="email" class="form-control" id="email" placeholder="Email" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <select class="w-100" id="country">-->
-<!--                                        <option value="usa">United States</option>-->
-<!--                                        <option value="uk">United Kingdom</option>-->
-<!--                                        <option value="ger">Germany</option>-->
-<!--                                        <option value="fra">France</option>-->
-<!--                                        <option value="ind">India</option>-->
-<!--                                        <option value="aus">Australia</option>-->
-<!--                                        <option value="bra">Brazil</option>-->
-<!--                                        <option value="cana">Canada</option>-->
-<!--                                    </select>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <input type="text" class="form-control mb-3" id="street_address" placeholder="Address" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <input type="text" class="form-control" id="city" placeholder="Town" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-md-6 mb-3">-->
-<!--                                        <input type="text" class="form-control" id="zipCode" placeholder="Zip Code" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-md-6 mb-3">-->
-<!--                                        <input type="number" class="form-control" id="phone_number" min="0" placeholder="Phone No" value="">-->
-<!--                                    </div>-->
-<!--                                    <div class="col-12 mb-3">-->
-<!--                                        <textarea name="comment" class="form-control w-100" id="comment" cols="30" rows="10" placeholder="Leave a comment about your order"></textarea>-->
-<!--                                    </div>-->
-
-<!--                                    <div class="col-12">-->
-<!--                                        <div class="custom-control custom-checkbox d-block mb-2">-->
-<!--                                            <input type="checkbox" class="custom-control-input" id="customCheck2">-->
-<!--                                            <label class="custom-control-label" for="customCheck2">Create an accout</label>-->
-<!--                                        </div>-->
-<!--                                        <div class="custom-control custom-checkbox d-block">-->
-<!--                                            <input type="checkbox" class="custom-control-input" id="customCheck3">-->
-<!--                                            <label class="custom-control-label" for="customCheck3">Ship to a different address</label>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </form>-->
+                    <div class="col-12 col-lg-12">
+                        <div class="cart-table clearfix">
+                            <table class="table table-responsive">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Sub Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach($products as $name => $product): ?>
+                                    <tr>
+                                        <td class="cart_product_desc">
+                                            <h5><?php echo $name; ?></h5>
+                                        </td>
+                                        <td class="price">
+                                            <span>$<?php echo $product['price']; ?></span>
+                                        </td>
+                                        <td class="qty">
+                                            <div class="qty-btn d-flex">
+                                                <div class="quantity">
+                                                    <span><?php echo $product['count']; ?></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$<?php echo $product['price']*$product['count']; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -193,7 +202,7 @@ $total = isset($_POST['total']) ? htmlspecialchars($_POST['total'], ENT_QUOTES, 
                                 <li><span>name:</span> <span><?php echo $userName?></span></li>
                                 <li><span>total:</span> <span>$<?php echo $total?></span></li>
                                 <li><span>Deposit Amount:</span> <span>$<?php echo $deposit?></span></li>
-                                <li><span class="mr-sm-2">Remaining Balance:</span> <span>$<?php echo $deposit-$total?></span></li>
+                                <li><span class="mr-sm-2">Remaining Balance:</span> <span>$<?php echo $remainingBalance?></span></li>
                             </ul>
 
                             <div class="payment-method">
@@ -210,14 +219,16 @@ $total = isset($_POST['total']) ? htmlspecialchars($_POST['total'], ENT_QUOTES, 
                             </div>
 
                             <div class="cart-btn mt-100">
-                                <form action="checkout.php" method="POST" class="cart">
+                                <form action="thanks.php" method="POST" class="cart">
+                                    <input type="hidden" name="usersId" value="<?php echo $usersId; ?>">
+                                    <input type="hidden" name="userName" value="<?php echo $userName; ?>">
                                     <input type="hidden" name="name" value="<?php echo $name; ?>">
-                                    <input type="hidden" name="price" value="<?php echo $price; ?>">
+                                    <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
+                                    <input type="hidden" name="count" value="<?php echo $product['count']; ?>">
                                     <input type="hidden" name="total" value="<?php echo $total; ?>">
-                                    <input type="hidden" value="1" name="count">
-                                    <button type="submit" class="btn amado-btn w-100">Checkout</button>
+                                    <input type="hidden" name="remainingBalance" value="<?php echo $remainingBalance; ?>">
+                                    <button type="submit"name='confirm' class="btn amado-btn w-100">Confirm</button>
                                 </form>
-                                <a href="thanks.html" class="btn amado-btn w-100">Confirm</a>
                             </div>
                         </div>
                     </div>
@@ -226,31 +237,6 @@ $total = isset($_POST['total']) ? htmlspecialchars($_POST['total'], ENT_QUOTES, 
         </div>
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
-    <!-- ##### Newsletter Area Start ##### -->
-<!--    <section class="newsletter-area section-padding-100-0">-->
-<!--        <div class="container">-->
-<!--            <div class="row align-items-center">-->
-<!--                &lt;!&ndash; Newsletter Text &ndash;&gt;-->
-<!--                <div class="col-12 col-lg-6 col-xl-7">-->
-<!--                    <div class="newsletter-text mb-100">-->
-<!--                        <h2>Subscribe for a <span>25% Discount</span></h2>-->
-<!--                        <p>Nulla ac convallis lorem, eget euismod nisl. Donec in libero sit amet mi vulputate consectetur. Donec auctor interdum purus, ac finibus massa bibendum nec.</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                &lt;!&ndash; Newsletter Form &ndash;&gt;-->
-<!--                <div class="col-12 col-lg-6 col-xl-5">-->
-<!--                    <div class="newsletter-form mb-100">-->
-<!--                        <form action="#" method="post">-->
-<!--                            <input type="email" name="email" class="nl-email" placeholder="Your E-mail">-->
-<!--                            <input type="submit" value="Subscribe">-->
-<!--                        </form>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-    <!-- ##### Newsletter Area End ##### -->
 
     <!-- ##### Footer Area Start ##### -->
     <footer class="footer_area clearfix">
