@@ -15,6 +15,14 @@ class Products extends DB
 //      全ての商品レコードを配列形式で返す
         return $rows;
     }
+    public function SelectProductsByName($key)
+    {
+        $sql = "SELECT * FROM products WHERE product_name =?";
+        $array = array($key);
+        $res = parent::executeSQL($sql, $array);
+        $rows = $res->fetch(PDO::FETCH_NUM);
+        return $rows;
+    }
 
     public function FetchProductsById($productId)
     {
@@ -40,8 +48,13 @@ class Products extends DB
     public function UpdateProducts()
     {
         $sql = "UPDATE products SET product_name=?, price=?, quantity=? WHERE product_id=?";
-        //array関数の引数の順番に注意する
         $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity'], $_POST['product_id']);
+        parent::executeSQL($sql, $array);
+    }
+    public function UpdateQuantity($updatedStock, $productStock)
+    {
+        $sql = "UPDATE products SET quantity=? WHERE product_id=?";
+        $array = array($updatedStock, $productStock[0]);
         parent::executeSQL($sql, $array);
     }
 

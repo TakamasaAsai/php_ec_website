@@ -10,7 +10,13 @@ $users = new Users();
 
    session_start();
    $products = isset($_SESSION['products'])? $_SESSION['products']:[];
-//売上データを新規登録
+
+   var_dump($products);
+//購入商品のIDから在庫数をDBから取ってくる
+//$updatedStock = 在庫数-購入数
+//$updatedStockでDBの個数を更新する
+
+   //売上データを新規登録
 //userのデポジットを更新
 //var_dump($_POST);
 if (isset($_POST['confirm'])) {
@@ -22,6 +28,9 @@ if (isset($_POST['confirm'])) {
     //sales_productsテーブル
     foreach($products as $key => $product){
         $productClass->InsertSalesProducts($salesId,$key,$product);
+        $productStock = $productClass->SelectProductsByName($key);
+        $updatedStock = $productStock[2] - $product['count'];
+        $productClass->UpdateQuantity($updatedStock, $productStock);
     }
 }
 unset($_SESSION['products']);
