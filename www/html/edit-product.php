@@ -88,8 +88,8 @@ if (isset($productId)) {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="shop.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
-                <li><a href="checkout.html">Checkout</a></li>
-                <li><a href="orderhistory.html">Order History</a></li>
+                <li><a href="checkout.php">Checkout</a></li>
+                <li><a href="order-history.php">Order History</a></li>
             </ul>
         </nav>
         <!-- Button Group -->
@@ -283,10 +283,10 @@ if (isset($productId)) {
                                         <a class="nav-link" href="cart.php">Cart</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="checkout.html">Checkout</a>
+                                        <a class="nav-link" href="checkout.php">Checkout</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="orderhistory.html">Order History</a>
+                                        <a class="nav-link" href="order-history.php">Order History</a>
                                     </li>
                                 </ul>
                             </div>

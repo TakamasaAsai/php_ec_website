@@ -11,7 +11,7 @@ $users = new Users();
    session_start();
    $products = isset($_SESSION['products'])? $_SESSION['products']:[];
 
-   var_dump($products);
+//   var_dump($products);
 //購入商品のIDから在庫数をDBから取ってくる
 //$updatedStock = 在庫数-購入数
 //$updatedStockでDBの個数を更新する
@@ -20,16 +20,18 @@ $users = new Users();
 //userのデポジットを更新
 //var_dump($_POST);
 if (isset($_POST['confirm'])) {
-    $productClass->InsertSalesData();
+    $productClass->InsertOrderData();
     $users->UpdateDeposit();
     //salesのid取得
-    $salesId = $productClass->FetchLastInsertId();
-    var_dump($_SESSION);
+    $orderId = $productClass->FetchLastInsertId();
+//    var_dump($_SESSION);
     //sales_productsテーブル
     foreach($products as $key => $product){
-        $productClass->InsertSalesProducts($salesId,$key,$product);
+        $productClass->InsertOrderProducts($orderId,$key,$product);
         $productStock = $productClass->SelectProductsByName($key);
-        $updatedStock = $productStock[2] - $product['count'];
+        var_dump($productStock);
+        $updatedStock = $productStock['quantity'] - $product['count'];
+        var_dump($updatedStock);
         $productClass->UpdateQuantity($updatedStock, $productStock);
     }
 }

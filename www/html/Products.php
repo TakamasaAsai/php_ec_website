@@ -20,7 +20,7 @@ class Products extends DB
         $sql = "SELECT * FROM products WHERE product_name =?";
         $array = array($key);
         $res = parent::executeSQL($sql, $array);
-        $rows = $res->fetch(PDO::FETCH_NUM);
+        $rows = $res->fetch(PDO::FETCH_ASSOC);
         return $rows;
     }
 
@@ -54,7 +54,7 @@ class Products extends DB
     public function UpdateQuantity($updatedStock, $productStock)
     {
         $sql = "UPDATE products SET quantity=? WHERE product_id=?";
-        $array = array($updatedStock, $productStock[0]);
+        $array = array($updatedStock, $productStock['product_id']);
         parent::executeSQL($sql, $array);
     }
 
@@ -65,24 +65,24 @@ class Products extends DB
         parent::executeSQL($sql, $array);
     }
 
-    public function  InsertSalesData()
+    public function  InsertOrderData()
     {
         $date = date('Y-m-d H:i:s');
-        $sql = "INSERT INTO sales_data (sales_date, total, user_name, users_id) VALUES(?,?,?,?)";
+        $sql = "INSERT INTO order_data (order_date, total, user_name, users_id) VALUES(?,?,?,?)";
         $array = array($date, $_POST['total'], $_POST['userName'], $_POST['usersId']);
         parent::executeSQL($sql, $array);
     }
 
-    public function InsertSalesProducts($salesId,$key,$product)
+    public function InsertOrderProducts($orderId,$key,$product)
     {
-        $sql = "INSERT INTO sales_products (sales_id, product_name, quantity, price) VALUES(?,?,?,?)";
-        $array = array($salesId[0], $key, $product['count'], $product['price']);
+        $sql = "INSERT INTO order_products (order_id, product_name, quantity, price) VALUES(?,?,?,?)";
+        $array = array($orderId[0], $key, $product['count'], $product['price']);
         parent::executeSQL($sql, $array);
     }
 
     public function FetchLastInsertId()
     {
-        $sql = "SELECT MAX(id) FROM sales_data";
+        $sql = "SELECT MAX(id) FROM order_data";
         $lastInsertId = parent::executeSQL($sql, null);
         $rows = $lastInsertId->fetchAll(PDO::FETCH_NUM);
         return $rows[0];

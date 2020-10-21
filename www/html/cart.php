@@ -32,7 +32,11 @@ if (isset($_SESSION['products'])) {
             //既に商品がカートに入っているので、個数を足し算する
             //SESSION内の商品の個数
             $count = (int)$count + (int)$updateQuantity;
+            $name = $updateName;
+            $price = $product['price'];
+            $image = $product['image'];
 //            echo "<br>";
+//            var_dump($count);
 //            echo "個数更新";
         }
     }
@@ -64,6 +68,7 @@ if (isset($_SESSION['products'])) {
 //    var_dump($product['count']);
 //}
 //配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
+//var_dump($name, $count,$price,$image);
 if ($name != '' && $count != '' && $price != '' && $image != '') {
     $_SESSION['products'][$name] = [
         'count' => $count,
@@ -71,6 +76,7 @@ if ($name != '' && $count != '' && $price != '' && $image != '') {
         'image' => $image
     ];
 }
+//var_dump($product);
 //$_SESSION['products']に値が入ってたら、$productsに配列として代入
 $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
 
@@ -80,10 +86,10 @@ foreach ($products as $name => $product) {
     //各商品の小計を$totalに足す
     $total += $subtotal;
 }
-foreach ($products as $name => $product) {
-    $count = (int)$updateQuantity;
-    echo $count;
-}
+//foreach ($products as $name => $product) {
+//    $count = (int)$updateQuantity;
+//    echo $count;
+//}
 
 ?>
 <!DOCTYPE html>
@@ -164,8 +170,8 @@ foreach ($products as $name => $product) {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="shop.php">Shop</a></li>
                 <li class="active"><a href="cart.php">Cart</a></li>
-                <li><a href="checkout.html">Checkout</a></li>
-                <li><a href="orderhistory.html">Order History</a></li>
+                <li><a href="checkout.php">Checkout</a></li>
+                <li><a href="order-history.php">Order History</a></li>
             </ul>
         </nav>
         <!-- Button Group -->
@@ -228,6 +234,7 @@ foreach ($products as $name => $product) {
                                                     <input type="number" class="qty-text" id="qty<?php echo $name; ?>"
                                                            step="1" min="1" max="300" name="quantity"
                                                            value="<?php echo $product['count']; ?>">
+<!--                                                           value="--><?php //echo (isset($count)) ? $count : $product['count']; ?><!--">-->
                                                     <input type="hidden" name="update_quantity_name" value="<?php echo $name; ?>"
                                                     <span class="qty-plus" onclick="var effect = document.getElementById('qty<?php echo $name; ?>//'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                                     <button type="submit" class="btn btn-red quantity">更新</button>
@@ -264,7 +271,8 @@ foreach ($products as $name => $product) {
                                 <input type="hidden" name="name" value="<?php echo $name; ?>">
                                 <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
                                 <input type="hidden" name="total" value="<?php echo $total; ?>">
-                                <input type="hidden" value="1" name="count">
+<!--                                <input type="hidden" value="--><?php //echo (isset($count)) ? $count : $product['count'];?><!--" name="count">-->
+                                <input type="hidden" value="<?php echo $product['count'];?>" name="count">
                                 <button type="submit"
                                         class="btn amado-btn w-100" <?php if (empty($total)) echo 'disabled="disabled"'; ?>>
                                     Checkout
@@ -351,10 +359,10 @@ foreach ($products as $name => $product) {
                                         <a class="nav-link" href="cart.php">Cart</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="checkout.html">Checkout</a>
+                                        <a class="nav-link" href="checkout.php">Checkout</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="orderhistory.html">Order History</a>
+                                        <a class="nav-link" href="order-history.php">Order History</a>
                                     </li>
                                 </ul>
                             </div>
