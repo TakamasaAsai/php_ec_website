@@ -4,7 +4,8 @@ $delete_name = isset($_POST['delete_name']) ? htmlspecialchars($_POST['delete_na
 session_start();
 //unset()で削除ボタンを押した変数を破棄する
 if ($delete_name != '') unset($_SESSION['products'][$delete_name]);
-
+require_once('Products.php');
+$productStock = new Products();
 //POSTで送られてきたカート内商品のデータを変数へ代入
 $image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
 $name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
@@ -25,8 +26,16 @@ if (isset($_SESSION['products'])) {
             //既に商品がカートに入っているので、個数を足し算する
             //SESSION内の商品の個数
             $count = (int)$count + (int)$product['count'];
+            $stockAdd = $productStock->SelectProductsByName($name);
 //            echo "<br>";
 //            echo "個数追加";
+        }
+        //      もし、ユーザが更新したい個数が在庫数以上の時、更新できない
+        if (!empty($stockAdd['quantity']) && $stockAdd['quantity'] < $count){
+            $error_message = 'Out of Stock';
+            echo $error_message;
+            echo "追加";
+//            var_dump($stockAdd['product_name']);
         }
         if ($key == $updateName) {
             //既に商品がカートに入っているので、個数を足し算する
@@ -35,38 +44,22 @@ if (isset($_SESSION['products'])) {
             $name = $updateName;
             $price = $product['price'];
             $image = $product['image'];
+            $stock = $productStock->SelectProductsByName($updateName);
 //            echo "<br>";
+//            var_dump($stock);
 //            var_dump($count);
 //            echo "個数更新";
         }
+//      もし、ユーザが更新したい個数が在庫数以上の時、更新できない
+        if (!empty($stock['quantity']) && $stock['quantity'] < $count){
+            $error_message = 'Out of Stock';
+            echo $error_message;
+            echo "更新";
+//            var_dump($stock['quantity']);
+        }
     }
 }
-//   if(isset($products)){
-//           foreach($products as $key => $product){
-//           echo "<br>";
-//           echo $updateName;
-//           echo "<br>";
-//           echo $updateQuantity;
-//           echo "<br>";
-//           echo $count;
-//           echo "<br>";
-//           echo $key;      //商品名
-//           echo "<br>";
-//           echo $_POST['update_quantity_name'];      //商品名
-//           echo "<br>";
-//           echo $product['count'];  //商品の個数
-//           echo "<br>";
-//           echo $product['price']; //商品の金額
-//           echo "<br>";
-//       }
-//   }
-//if (isset($_POST['quantity'])) {
-//    $count = $_POST['quantity'];
-//}
-//if ($name == $_POST['update_quantity_name'] && isset($_POST['quantity'])) {
-//    $count = $_POST['quantity'];
-//    var_dump($product['count']);
-//}
+
 //配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
 //var_dump($name, $count,$price,$image);
 if ($name != '' && $count != '' && $price != '' && $image != '') {
@@ -86,11 +79,25 @@ foreach ($products as $name => $product) {
     //各商品の小計を$totalに足す
     $total += $subtotal;
 }
-//foreach ($products as $name => $product) {
-//    $count = (int)$updateQuantity;
-//    echo $count;
-//}
 
+//カート内と在庫数を比較して足りなければエラーを表示
+//require_once('Products.php');
+//$productStock = new Products();
+//
+//foreach($products as $key => $product) {
+//    $recordList[] = $productStock->SelectProductsByName($key);
+//}
+//var_dump($recordList);
+//echo '<br>';
+//$stock = array_column($recordList, "quantity", "product_name");
+//print_r($stock);
+//$orderQuantity = array_column($products, "count", "key");
+//print_r($orderQuantity);
+//var_dump($products);
+//if($products['count'] > $stock){
+//    $error_message = '在庫数が足りません';
+//    echo $error_message;
+//}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -211,7 +218,7 @@ foreach ($products as $name => $product) {
                                 <th>Name</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
-                                <th>Delete</th>
+                                <th>Subtotal</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -229,15 +236,14 @@ foreach ($products as $name => $product) {
                                     <td class="qty">
                                         <div class="qty-btn d-flex">
                                             <div class="quantity">
+                                                <span style="color:red"><?php if ($name==$updateName && isset($error_message)) echo $error_message; ?></span>
+                                                <span style="color:red"><?php if ($name==$stockAdd['product_name'] && isset($error_message)) echo $error_message; ?></span>
                                                 <form action="cart.php" method="post" name="update_quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty<?php echo $name; ?>//'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
                                                     <input type="number" class="qty-text" id="qty<?php echo $name; ?>"
                                                            step="1" min="1" max="300" name="quantity"
                                                            value="<?php echo $product['count']; ?>">
-<!--                                                           value="--><?php //echo (isset($count)) ? $count : $product['count']; ?><!--">-->
-                                                    <input type="hidden" name="update_quantity_name" value="<?php echo $name; ?>"
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty<?php echo $name; ?>//'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                    <button type="submit" class="btn btn-red quantity">更新</button>
+                                                    <input type="hidden" name="update_quantity_name" value="<?php echo $name; ?>">
+                                                    <button type="submit" class="btn btn-red quantity">Edit</button>
                                                 </form>
                                                 <!--                                                    <button type="submit" class="btn btn-red quantity" name="update_quantity">更新</button>-->
                                             </div>
@@ -250,7 +256,7 @@ foreach ($products as $name => $product) {
                                         <form action="cart.php" method="post">
                                             <input type="hidden" name="delete_name" value="<?php echo $name; ?>"
                                                    onClick='return CheckDelete()'>
-                                            <button type="submit" class="btn btn-red">削除</button>
+                                            <button type="submit" class="btn btn-red">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -274,7 +280,7 @@ foreach ($products as $name => $product) {
 <!--                                <input type="hidden" value="--><?php //echo (isset($count)) ? $count : $product['count'];?><!--" name="count">-->
                                 <input type="hidden" value="<?php echo $product['count'];?>" name="count">
                                 <button type="submit"
-                                        class="btn amado-btn w-100" <?php if (empty($total)) echo 'disabled="disabled"'; ?>>
+                                        class="btn amado-btn w-100" <?php if (empty($total)||isset($error_message)) echo 'disabled="disabled"'; ?>>
                                     Checkout
                                 </button>
                                 <button type="button"

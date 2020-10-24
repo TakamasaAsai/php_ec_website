@@ -3,7 +3,7 @@ require_once('Products.php');
 $products = new Products();
 
 //全レコードを表示する処理
-$recordlist = $products->SelectProductsAll();
+$recordList = $products->SelectProductsAll();
 //削除処理
 if (isset($_POST['delete'])) {
     $products->DeleteProducts($_POST['id']);
@@ -152,7 +152,7 @@ if (isset($_POST['delete'])) {
             </div>
 
             <div class="row">
-                <?php foreach ((array)$recordlist as $item) : ?>
+                <?php foreach ((array)$recordList as $item) : ?>
                     <!-- Single Product Area -->
                     <div class="col-12 col-sm-6 col-md-12 col-xl-6">
                         <div class="single-product-wrapper">
