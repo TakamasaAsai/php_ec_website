@@ -17,6 +17,7 @@ class DB
             return false;
         }
     }
+
     protected function executeSQL($sql, $array)
     {
         try {

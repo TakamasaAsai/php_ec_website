@@ -6,6 +6,7 @@ session_start();
 if ($delete_name != '') unset($_SESSION['products'][$delete_name]);
 require_once('Products.php');
 $productStock = new Products();
+require_once('Carts.php');
 //POSTで送られてきたカート内商品のデータを変数へ代入
 $image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
 $name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
@@ -13,53 +14,62 @@ $price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 
 $count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
 $updateName = isset($_POST['update_quantity_name']) ? htmlspecialchars($_POST['update_quantity_name'], ENT_QUOTES, 'utf-8') : '';
 $updateQuantity = isset($_POST['quantity']) ? htmlspecialchars($_POST['quantity'], ENT_QUOTES, 'utf-8') : '';
+$addName = "";
 $subtotal = "";
+$total = "";
+$sessionAddCart = "";
 //var_dump($_POST);
-//もし、sessionにproductsがあったら
-if (isset($_SESSION['products'])) {
+//もし、カートに（session）に商品（products）が既にあり、カートに商品が追加されたら
+if (isset($_SESSION['products']) && !empty($name)) {
+    echo "追加";
     //$_SESSION['products']を$productsという変数にいれる
     $products = $_SESSION['products'];
     //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
-    foreach ($products as $key => $product) {
-        //もし、キーとPOSTで受け取った商品名が一致したら、
-        if ($key == $name) {
-            //既に商品がカートに入っているので、個数を足し算する
-            //SESSION内の商品の個数
-            $count = (int)$count + (int)$product['count'];
-            $stockAdd = $productStock->SelectProductsByName($name);
-//            echo "<br>";
-//            echo "個数追加";
-        }
-        //      もし、ユーザが更新したい個数が在庫数以上の時、更新できない
-        if (!empty($stockAdd['quantity']) && $stockAdd['quantity'] < $count){
-            $error_message = 'Out of Stock';
-            echo $error_message;
-            echo "追加";
-//            var_dump($stockAdd['product_name']);
-        }
-        if ($key == $updateName) {
-            //既に商品がカートに入っているので、個数を足し算する
-            //SESSION内の商品の個数
-            $count = (int)$count + (int)$updateQuantity;
-            $name = $updateName;
-            $price = $product['price'];
-            $image = $product['image'];
-            $stock = $productStock->SelectProductsByName($updateName);
-//            echo "<br>";
-//            var_dump($stock);
-//            var_dump($count);
-//            echo "個数更新";
-        }
-//      もし、ユーザが更新したい個数が在庫数以上の時、更新できない
-        if (!empty($stock['quantity']) && $stock['quantity'] < $count){
-            $error_message = 'Out of Stock';
-            echo $error_message;
-            echo "更新";
-//            var_dump($stock['quantity']);
-        }
-    }
+    $cart = new Carts();
+    $sessionAddCart = $cart->addCart($products, $productStock, $count, $name);
+//    var_dump($sessionAddCart);
+//    echo '<br>';
+}
+if (!empty($sessionAddCart)) {
+    $count = $sessionAddCart['count'];
+    $name = $sessionAddCart['name'];
+    $price = $sessionAddCart['price'];
+    $image = $sessionAddCart['image'];
+    $addName = $sessionAddCart['stockAdd']['product_name'];
+}
+if (!empty($sessionAddCart['stockAdd']['quantity']) && $sessionAddCart['stockAdd']['quantity'] < $count){
+    $error_message = 'Out of Stock';
 }
 
+if (isset($_SESSION['products']) && !empty($updateName)) {
+    echo "更新";
+    //$_SESSION['products']を$productsという変数にいれる
+    $products = $_SESSION['products'];
+    //$productsをforeachで回し、キー(商品名)と値（金額・個数）取得
+    $cart = new Carts();
+    $sessionUpdateCart = $cart->updateCart($products, $productStock, $updateName, $updateQuantity, $count);
+//    var_dump($sessionUpdateCart);
+//    echo '<br>';
+}
+if (!empty($sessionUpdateCart)) {
+    $count = $sessionUpdateCart['count'];
+    $name = $sessionUpdateCart['name'];
+    $price = $sessionUpdateCart['price'];
+    $image = $sessionUpdateCart['image'];
+}
+if (!empty($sessionUpdateCart['stock']['quantity']) && $sessionUpdateCart['stock']['quantity'] < $count){
+    $error_message = 'Out of Stock';
+}
+//echo '<br>';
+//var_dump($name);
+//echo '<br>';
+//var_dump($count);
+//echo '<br>';
+//var_dump($price);
+//echo '<br>';
+//var_dump($image);
+//echo '<br>';
+//更新、追加それぞれのパターンで変更した値をこの中で＄_SESSIONに入れ直す
 //配列に入れるには、$name,$count,$priceの値が取得できていることが前提なのでif文で空のデータを排除する
 //var_dump($name, $count,$price,$image);
 if ($name != '' && $count != '' && $price != '' && $image != '') {
@@ -69,35 +79,37 @@ if ($name != '' && $count != '' && $price != '' && $image != '') {
         'image' => $image
     ];
 }
-//var_dump($product);
+
 //$_SESSION['products']に値が入ってたら、$productsに配列として代入
 $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
-
+//echo '<br>';
+//var_dump($products);
 foreach ($products as $name => $product) {
     //各商品の小計を取得
     $subtotal = (int)$product['price'] * (int)$product['count'];
     //各商品の小計を$totalに足す
-    $total += $subtotal;
+    var_dump($subtotal);
+    $total+= (int)$subtotal;
+    var_dump($total);
+}
+function view($template, array $data = [])
+{
+    extract($data);
+
+    require $template;
 }
 
-//カート内と在庫数を比較して足りなければエラーを表示
-//require_once('Products.php');
-//$productStock = new Products();
-//
-//foreach($products as $key => $product) {
-//    $recordList[] = $productStock->SelectProductsByName($key);
-//}
-//var_dump($recordList);
-//echo '<br>';
-//$stock = array_column($recordList, "quantity", "product_name");
-//print_r($stock);
-//$orderQuantity = array_column($products, "count", "key");
-//print_r($orderQuantity);
-//var_dump($products);
-//if($products['count'] > $stock){
-//    $error_message = '在庫数が足りません';
-//    echo $error_message;
-//}
+
+$data = [
+    'products' => $products,
+    'name' => $name,
+    'updateName' => $updateName,
+    'addName' => $addName,
+    'error_name' => $error_message,
+    'addName' => $addName,
+];
+
+view('./cart.html', $data);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -236,13 +248,14 @@ foreach ($products as $name => $product) {
                                     <td class="qty">
                                         <div class="qty-btn d-flex">
                                             <div class="quantity">
-                                                <span style="color:red"><?php if ($name==$updateName && isset($error_message)) echo $error_message; ?></span>
-                                                <span style="color:red"><?php if ($name==$stockAdd['product_name'] && isset($error_message)) echo $error_message; ?></span>
+                                                <span style="color:red"><?php if ($name == $updateName && isset($error_message)) echo $error_message; ?></span>
+                                                <span style="color:red"><?php if ($name == $addName && isset($error_message)) echo $error_message; ?></span>
                                                 <form action="cart.php" method="post" name="update_quantity">
                                                     <input type="number" class="qty-text" id="qty<?php echo $name; ?>"
                                                            step="1" min="1" max="300" name="quantity"
                                                            value="<?php echo $product['count']; ?>">
-                                                    <input type="hidden" name="update_quantity_name" value="<?php echo $name; ?>">
+                                                    <input type="hidden" name="update_quantity_name"
+                                                           value="<?php echo $name; ?>">
                                                     <button type="submit" class="btn btn-red quantity">Edit</button>
                                                 </form>
                                                 <!--                                                    <button type="submit" class="btn btn-red quantity" name="update_quantity">更新</button>-->
@@ -277,10 +290,11 @@ foreach ($products as $name => $product) {
                                 <input type="hidden" name="name" value="<?php echo $name; ?>">
                                 <input type="hidden" name="price" value="<?php echo $product['price']; ?>">
                                 <input type="hidden" name="total" value="<?php echo $total; ?>">
-<!--                                <input type="hidden" value="--><?php //echo (isset($count)) ? $count : $product['count'];?><!--" name="count">-->
-                                <input type="hidden" value="<?php echo $product['count'];?>" name="count">
+                                <!--                                <input type="hidden" value="-->
+                                <?php //echo (isset($count)) ? $count : $product['count'];?><!--" name="count">-->
+                                <input type="hidden" value="<?php echo $product['count']; ?>" name="count">
                                 <button type="submit"
-                                        class="btn amado-btn w-100" <?php if (empty($total)||isset($error_message)) echo 'disabled="disabled"'; ?>>
+                                        class="btn amado-btn w-100" <?php if (empty($total) || isset($error_message)) echo 'disabled="disabled"'; ?>>
                                     Checkout
                                 </button>
                                 <button type="button"
@@ -296,31 +310,6 @@ foreach ($products as $name => $product) {
     </div>
 </div>
 <!-- ##### Main Content Wrapper End ##### -->
-
-<!-- ##### Newsletter Area Start ##### -->
-<!--    <section class="newsletter-area section-padding-100-0">-->
-<!--        <div class="container">-->
-<!--            <div class="row align-items-center">-->
-<!--                &lt;!&ndash; Newsletter Text &ndash;&gt;-->
-<!--                <div class="col-12 col-lg-6 col-xl-7">-->
-<!--                    <div class="newsletter-text mb-100">-->
-<!--                        <h2>Subscribe for a <span>25% Discount</span></h2>-->
-<!--                        <p>Nulla ac convallis lorem, eget euismod nisl. Donec in libero sit amet mi vulputate consectetur. Donec auctor interdum purus, ac finibus massa bibendum nec.</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                &lt;!&ndash; Newsletter Form &ndash;&gt;-->
-<!--                <div class="col-12 col-lg-6 col-xl-5">-->
-<!--                    <div class="newsletter-form mb-100">-->
-<!--                        <form action="#" method="post">-->
-<!--                            <input type="email" name="email" class="nl-email" placeholder="Your E-mail">-->
-<!--                            <input type="submit" value="Subscribe">-->
-<!--                        </form>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-<!-- ##### Newsletter Area End ##### -->
 
 <!-- ##### Footer Area Start ##### -->
 <footer class="footer_area clearfix">
