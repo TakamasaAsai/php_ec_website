@@ -21,4 +21,4 @@ $data = [
 ];
 
 view('./shop.html', $data);
-?>
+

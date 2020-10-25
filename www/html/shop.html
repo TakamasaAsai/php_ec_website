@@ -48,7 +48,7 @@
     <div class="mobile-nav">
         <!-- Navbar Brand -->
         <div class="amado-navbar-brand">
-            <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+            <a href="index.php"><img src="img/core-img/logo.png" alt=""></a>
         </div>
         <!-- Navbar Toggler -->
         <div class="amado-navbar-toggler">
@@ -64,12 +64,12 @@
         </div>
         <!-- Logo -->
         <div class="logo">
-            <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+            <a href="index.php"><img src="img/core-img/logo.png" alt=""></a>
         </div>
         <!-- Amado Nav -->
         <nav class="amado-nav">
             <ul>
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.php">Home</a></li>
                 <li class="active"><a href="shop.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="checkout.php">Checkout</a></li>
@@ -78,67 +78,18 @@
         </nav>
         <!-- Button Group -->
         <div class="amado-btn-group mt-30 mb-100">
-            <a href="#" class="btn amado-btn mb-15">%Discount%</a>
+            <a href="manage-product.php" class="btn amado-btn mb-15">Manage Product</a>
             <a href="add-product.php" class="btn amado-btn active">Add Product</a>
         </div>
         <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
-            <a href="cart.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-            <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
-            <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
-        </div>
-        <!-- Social Button -->
-        <div class="social-info d-flex justify-content-between">
-            <a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a>
-            <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+            <a href="cart.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span></span></a>
         </div>
     </header>
     <!-- Header Area End -->
 
     <div class="cart-table-area section-padding-100">
         <div class="container-fluid">
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="product-topbar d-xl-flex align-items-end justify-content-between">
-                        <!-- Total Products -->
-                        <div class="total-products">
-                            <p>Showing 1-8 0f 25</p>
-                            <div class="view d-flex">
-                                <a href="#"><i class="fa fa-th-large" aria-hidden="true"></i></a>
-                                <a href="#"><i class="fa fa-bars" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                        <!-- Sorting -->
-                        <div class="product-sorting d-flex">
-                            <div class="sort-by-date d-flex align-items-center mr-15">
-                                <p>Sort by</p>
-                                <form action="#" method="get">
-                                    <select name="select" id="sortBydate">
-                                        <option value="value">Date</option>
-                                        <option value="value">Newest</option>
-                                        <option value="value">Popular</option>
-                                    </select>
-                                </form>
-                            </div>
-                            <div class="view-product d-flex align-items-center">
-                                <p>View</p>
-                                <form action="#" method="get">
-                                    <select name="select" id="viewProduct">
-                                        <option value="value">12</option>
-                                        <option value="value">24</option>
-                                        <option value="value">48</option>
-                                        <option value="value">96</option>
-                                    </select>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="row">
                 <?php foreach ((array)$recordList as $item) : ?>
                 <!-- Single Product Area -->
@@ -157,10 +108,8 @@
                             <div class="product-meta-data">
                                 <div class="line"></div>
                                 <p class="product-price">$<?php echo $item['price']; ?></p>
-                                <!--                                    <a>-->
                                 <h5><?php echo $item['product_name']; ?></h5>
                                 <h6>Stock : <?php echo $item['quantity']; ?></h6>
-                                <!--                                    </a>-->
                             </div>
                             <!-- Ratings & Cart -->
                             <div class="ratings-cart text-right">
@@ -171,23 +120,6 @@
                                     <input type="hidden" value="1" name="count">
                                     <?php if($item['quantity']>0) {echo '<button type="submit" data-toggle="tooltip" data-placement="left" title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png"></button>';} ?>
                                 </form>
-                                <div>
-                                    <form method='post' action='edit-product.php'>
-                                        <!--valueの中身を更新する商品のGoodsIDのみ表示したい。-->
-                                        <input type='hidden' name='product_id' value="<?php echo $item['product_id']; ?>">
-                                        <!--更新ボタンで指定された商品レコードのGoodsIDをPOST更新用フォーム要素の表示の$_POST['update']に送る-->
-                                        <input class="btn amado-btn mb-15" type='submit' name='update'
-                                               value='Edit Product'>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form method='post' action=''>
-                                        <!--valueの中身を削除する商品のGoodsIDのみ表示したい。-->
-                                        <input type='hidden' name='id' id='Deleted' value="<?php echo $item['product_id']; ?>">
-                                        <!--削除ボタンで指定された商品レコードのGoodsIDをPOSTで削除処理の$_POST['delete']へ送って、データベースから削除する-->
-                                        <input class="btn amado-btn mb-15" type='submit' name='delete' id='delete' value='Delete Product' onClick='return CheckDelete()'>
-                                    </form>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -196,19 +128,19 @@
 
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <!-- Pagination -->
-                <nav aria-label="navigation">
-                    <ul class="pagination justify-content-end mt-50">
-                        <li class="page-item active"><a class="page-link" href="#">01.</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02.</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03.</a></li>
-                        <li class="page-item"><a class="page-link" href="#">04.</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
+<!--        <div class="row">-->
+<!--            <div class="col-12">-->
+<!--                &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--                <nav aria-label="navigation">-->
+<!--                    <ul class="pagination justify-content-end mt-50">-->
+<!--                        <li class="page-item active"><a class="page-link" href="#">01.</a></li>-->
+<!--                        <li class="page-item"><a class="page-link" href="#">02.</a></li>-->
+<!--                        <li class="page-item"><a class="page-link" href="#">03.</a></li>-->
+<!--                        <li class="page-item"><a class="page-link" href="#">04.</a></li>-->
+<!--                    </ul>-->
+<!--                </nav>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 </div>
     <!-- ##### Main Content Wrapper End ##### -->
@@ -222,7 +154,7 @@
                     <div class="single_widget_area">
                         <!-- Logo -->
                         <div class="footer-logo mr-50">
-                            <a href="index.html"><img src="img/core-img/logo2.png" alt=""></a>
+                            <a href="index.php"><img src="img/core-img/logo2.png" alt=""></a>
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
@@ -247,7 +179,7 @@
                                 <div class="collapse navbar-collapse" id="footerNavContent">
                                     <ul class="navbar-nav ml-auto">
                                         <li class="nav-item active">
-                                            <a class="nav-link" href="index.html">Home</a>
+                                            <a class="nav-link" href="index.php">Home</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="shop.php">Shop</a>

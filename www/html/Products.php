@@ -33,8 +33,8 @@ class Products extends DB
 
     public function InsertProducts()
     {
-        $sql = "INSERT INTO products (product_name, price, quantity) VALUES(?,?,?)";
-        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity']);
+        $sql = "INSERT INTO products (product_name, price, quantity, image) VALUES(?,?,?,?)";
+        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity'], $_POST['image']);
         parent::executeSQL($sql, $array);
     }
 
