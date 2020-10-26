@@ -118,16 +118,16 @@
                                     <h5><?php echo $name; ?></h5>
                                 </td>
                                 <td class="price">
-                                    <span>$<?php echo $product['price']; ?></span>
+                                    <span>$<?php echo (int)$product['price']; ?></span>
                                 </td>
                                 <td class="qty">
                                     <div class="qty-btn d-flex">
                                         <div class="quantity">
-                                            <span><?php echo $product['count']; ?></span>
+                                            <span><?php echo (int)$product['count']; ?></span>
                                         </div>
                                     </div>
                                 </td>
-                                <td>$<?php echo $product['price']*$product['count']; ?>
+                                <td>$<?php echo (int)$product['price']*(int)$product['count']; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

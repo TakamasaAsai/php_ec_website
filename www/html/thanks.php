@@ -6,9 +6,8 @@ require_once('Products.php');
 $productClass = new Products();
 require_once('Users.php');
 $users = new Users();
-
-   session_start();
-   $products = isset($_SESSION['products'])? $_SESSION['products']:[];
+session_start();
+$products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
 
 //購入商品のIDから在庫数をDBから取ってくる
 //$updatedStock = 在庫数-購入数
@@ -22,8 +21,8 @@ if (isset($_POST['confirm'])) {
     //salesのid取得
     $orderId = $productClass->FetchLastInsertId();
     //sales_productsテーブル
-    foreach($products as $key => $product){
-        $productClass->InsertOrderProducts($orderId,$key,$product);
+    foreach ($products as $key => $product) {
+        $productClass->InsertOrderProducts($orderId, $key, $product);
         $productStock = $productClass->SelectProductsByName($key);
         $updatedStock = $productStock['quantity'] - $product['count'];
         $productClass->UpdateQuantity($updatedStock, $productStock);

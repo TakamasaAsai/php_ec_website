@@ -4,16 +4,17 @@ $delete_name = isset($_POST['delete_name']) ? htmlspecialchars($_POST['delete_na
 session_start();
 //unset()で削除ボタンを押した変数を破棄する
 if ($delete_name != '') unset($_SESSION['products'][$delete_name]);
+require_once('functions.php');
 require_once('Products.php');
 $productStock = new Products();
 require_once('Carts.php');
 //POSTで送られてきたカート内商品のデータを変数へ代入
-$image = isset($_POST['image']) ? htmlspecialchars($_POST['image'], ENT_QUOTES, 'utf-8') : '';
-$name = isset($_POST['name']) ? htmlspecialchars($_POST['name'], ENT_QUOTES, 'utf-8') : '';
-$price = isset($_POST['price']) ? htmlspecialchars($_POST['price'], ENT_QUOTES, 'utf-8') : '';
-$count = isset($_POST['count']) ? htmlspecialchars($_POST['count'], ENT_QUOTES, 'utf-8') : '';
-$updateName = isset($_POST['update_quantity_name']) ? htmlspecialchars($_POST['update_quantity_name'], ENT_QUOTES, 'utf-8') : '';
-$updateQuantity = isset($_POST['quantity']) ? htmlspecialchars($_POST['quantity'], ENT_QUOTES, 'utf-8') : '';
+$image = isset($_POST['image']) ? h($_POST['image']) : '';
+$name = isset($_POST['name']) ? h($_POST['name']) : '';
+$price = isset($_POST['price']) ? h($_POST['price']) : '';
+$count = isset($_POST['count']) ? h($_POST['count']) : '';
+$updateName = isset($_POST['update_quantity_name']) ? h($_POST['update_quantity_name']) : '';
+$updateQuantity = isset($_POST['quantity']) ? h($_POST['quantity']) : '';
 $addName = "";
 $subtotal = "";
 $total = 0;
