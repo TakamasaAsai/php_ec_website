@@ -9,10 +9,6 @@ $users = new Users();
 session_start();
 $products = isset($_SESSION['products']) ? $_SESSION['products'] : [];
 
-//購入商品のIDから在庫数をDBから取ってくる
-//$updatedStock = 在庫数-購入数
-//$updatedStockでDBの個数を更新する
-
 //売上データを新規登録
 //userのデポジットを更新
 if (isset($_POST['confirm'])) {
