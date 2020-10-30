@@ -126,14 +126,12 @@
                                 <td class="qty">
                                     <div class="qty-btn d-flex">
                                         <div class="quantity">
-                                            <span style="color:red"><?php if ($name == $updateName && isset($error_message)) echo $error_message; ?></span>
-                                            <span style="color:red"><?php if ($name == $addName && isset($error_message)) echo $error_message; ?></span>
-                                            <form action="cart.php" method="post" name="update_quantity">
+                                            <span style="color:red"><?php if (!empty($product['error_message'])) echo $product['error_message']; ?></span>
+                                            <form action="update-cart.php" method="post" name="update_quantity">
                                                 <input type="number" class="qty-text" id="qty<?php echo $name; ?>"
                                                        step="1" min="1" max="300" name="quantity"
                                                        value="<?php echo $product['count']; ?>">
-                                                <input type="hidden" name="update_quantity_name"
-                                                       value="<?php echo $name; ?>">
+                                                <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
                                                 <button type="submit" class="btn btn-red quantity">Edit</button>
                                             </form>
                                         </div>
@@ -143,7 +141,7 @@
                                 </td>
 
                                 <td>
-                                    <form action="cart.php" method="post">
+                                    <form action="delete-cart.php" method="post">
                                         <input type="hidden" name="delete_name" value="<?php echo $name; ?>"
                                                onClick='return CheckDelete()'>
                                         <button type="submit" class="btn btn-red">Delete</button>
@@ -169,7 +167,7 @@
                                 <input type="hidden" name="total" value="<?php echo $total; ?>">
                                 <input type="hidden" value="<?php echo $product['count']; ?>" name="count">
                                 <button type="submit"
-                                        class="btn amado-btn w-100" <?php if (empty($total) || isset($error_message)) echo 'disabled="disabled"'; ?>>
+                                        class="btn amado-btn w-100" <?php if (empty($total) || !empty($error_message)) echo 'disabled="disabled"'; ?>>
                                 Checkout
                                 </button>
                                 <button type="button"

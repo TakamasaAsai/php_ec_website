@@ -1,4 +1,5 @@
 <?php
+require_once('functions.php');
 require_once('Products.php');
 $products = new Products();
 
@@ -8,12 +9,6 @@ $recordList = $products->SelectProductsAll();
 if (isset($_POST['delete'])) {
     $products->DeleteProducts($_POST['id']);
     header('Location: ./manage-product.php');
-}
-function view($template, array $data = [])
-{
-    extract($data);
-
-    require $template;
 }
 
 

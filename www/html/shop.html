@@ -89,6 +89,7 @@
     <!-- Header Area End -->
 
     <div class="cart-table-area section-padding-100">
+        <h1>Product List</h1>
         <div class="container-fluid">
             <div class="row">
                 <?php foreach ((array)$recordList as $item) : ?>
@@ -99,7 +100,6 @@
                         <div class="product-img">
                             <img src="<?php echo $item['image']; ?>" alt="">
                             <!-- Hover Thumb -->
-                            <!--                                <img class="hover-img" src="img/product-img/product2.jpg" alt="">-->
                         </div>
 
                         <!-- Product Description -->
@@ -113,10 +113,8 @@
                             </div>
                             <!-- Ratings & Cart -->
                             <div class="ratings-cart text-right">
-                                <form action="cart.php" method="POST" class="cart">
-                                    <input type="hidden" name="image" value="<?php echo $item['image']; ?>">
-                                    <input type="hidden" name="name" value="<?php echo $item['product_name']; ?>">
-                                    <input type="hidden" name="price" value="<?php echo $item['price']; ?>">
+                                <form action="add-cart.php" method="POST" class="cart">
+                                    <input type="hidden" name="product_id" value="<?php echo $item['product_id']; ?>">
                                     <input type="hidden" value="1" name="count">
                                     <?php if($item['quantity']>0) {echo '<button type="submit" data-toggle="tooltip" data-placement="left" title="Add to Cart" class="btn  mb-15"><img src="img/core-img/cart.png"></button>';} ?>
                                 </form>
@@ -128,19 +126,6 @@
 
             </div>
         </div>
-<!--        <div class="row">-->
-<!--            <div class="col-12">-->
-<!--                &lt;!&ndash; Pagination &ndash;&gt;-->
-<!--                <nav aria-label="navigation">-->
-<!--                    <ul class="pagination justify-content-end mt-50">-->
-<!--                        <li class="page-item active"><a class="page-link" href="#">01.</a></li>-->
-<!--                        <li class="page-item"><a class="page-link" href="#">02.</a></li>-->
-<!--                        <li class="page-item"><a class="page-link" href="#">03.</a></li>-->
-<!--                        <li class="page-item"><a class="page-link" href="#">04.</a></li>-->
-<!--                    </ul>-->
-<!--                </nav>-->
-<!--            </div>-->
-<!--        </div>-->
     </div>
 </div>
     <!-- ##### Main Content Wrapper End ##### -->

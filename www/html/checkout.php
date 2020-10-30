@@ -2,7 +2,7 @@
 session_start();
 require_once('Users.php');
 $users = new Users();
-require_once ('functions.php');
+require_once('functions.php');
 //DBからid=1のユーザデータを取得し、名前、Depositを表示す処理
 $usersId = 1;
 $rows = "";
@@ -36,12 +36,6 @@ if (!empty($_SESSION['products'])) {
 }
 $remainingBalance = (int)$deposit - (int)$total;
 
-function view($template, array $data = [])
-{
-    extract($data);
-
-    require $template;
-}
 
 $data = [
     'products' => $products,

@@ -31,17 +31,17 @@ class Products extends DB
         }
     }
 
-    public function InsertProducts()
+    public function InsertProducts($productName,$price,$quantity,$image)
     {
         $sql = "INSERT INTO products (product_name, price, quantity, image) VALUES(?,?,?,?)";
-        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity'], $_POST['image']);
+        $array = array($productName,$price,$quantity,$image);
         parent::executeSQL($sql, $array);
     }
 
-    public function UpdateProducts()
+    public function UpdateProducts($productName,$price,$quantity,$productId)
     {
         $sql = "UPDATE products SET product_name=?, price=?, quantity=? WHERE product_id=?";
-        $array = array($_POST['product_name'], $_POST['price'], $_POST['quantity'], $_POST['product_id']);
+        $array = array($productName,$price,$quantity,$productId);
         parent::executeSQL($sql, $array);
     }
 
@@ -59,11 +59,11 @@ class Products extends DB
         parent::executeSQL($sql, $array);
     }
 
-    public function InsertOrderData()
+    public function InsertOrderData($total,$userName,$usersId)
     {
         $date = date('Y-m-d H:i:s');
         $sql = "INSERT INTO order_data (order_date, total, user_name, users_id) VALUES(?,?,?,?)";
-        $array = array($date, $_POST['total'], $_POST['userName'], $_POST['usersId']);
+        $array = array($date, $total, $userName, $usersId);
         parent::executeSQL($sql, $array);
     }
 

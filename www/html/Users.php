@@ -14,10 +14,10 @@ class Users extends DB
         }
     }
 
-    public function UpdateDeposit()
+    public function UpdateDeposit($remainingBalance,$usersId)
     {
         $sql = "UPDATE users SET deposit=? WHERE user_id=?";
-        $array = array($_POST['remainingBalance'], $_POST['usersId']);
+        $array = array($remainingBalance, $usersId);
         parent::executeSQL($sql, $array);
     }
 }
